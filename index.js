@@ -29,6 +29,8 @@ server.post('/get-movie-details', (req, res) => {
         });
         responseFromAPI.on('end', () => {
             const movie = JSON.parse(completeResponse);
+            console.log(movie);
+            
             let dataToSend = movieToSearch === 'The Godfather' ? `I don't have the required info on that. Here's some info on 'The Godfather' instead.\n` : '';
             dataToSend += `${movie.Title} is a ${movie.Actors} starer ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}`;
             //console.log(dataToSend);
@@ -36,14 +38,32 @@ server.post('/get-movie-details', (req, res) => {
             
             return res.json({
                 fulfillmentText: dataToSend,
-                source: 'get-movie-details'
+                source: 'get-movie-details',
+                fulfillmentMessages: [
+                    {
+                      "text": {
+                        "text": [
+                          movie.Poster || 'noDataSend'
+                        ]
+                      }
+                    }
+                  ]              
             });
 
         });
     }, (error) => {
         return res.json({
             fulfillmentText: 'Something went wrong!',        
-            source: 'get-movie-details'
+            source: 'get-movie-details',
+            fulfillmentMessages: [
+                {
+                  "text": {
+                    "text": [
+                      "Text defined in Dialogflow's console for the intent that was matched"
+                    ]
+                  }
+                }
+              ]
         });
     });
 });
